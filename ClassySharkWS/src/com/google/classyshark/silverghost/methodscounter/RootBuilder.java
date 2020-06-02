@@ -17,6 +17,7 @@
 package com.google.classyshark.silverghost.methodscounter;
 
 import com.google.classyshark.silverghost.contentreader.dex.DexlibLoader;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,6 +30,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.jf.dexlib2.iface.ClassDef;
@@ -39,6 +41,9 @@ import org.jf.dexlib2.iface.Method;
  *
  */
 public class RootBuilder {
+
+    private Boolean filterGms = false;
+
     public ClassNode fillClassesWithMethods(File file) {
         if (file.getName().endsWith("aar")) {
             return fillFromAar(file);
@@ -113,7 +118,6 @@ public class RootBuilder {
     }
 
 
-
     private ClassNode fillFromJayce(File file) {
 
         ClassNode rootNode = new ClassNode(file.getName());
@@ -143,10 +147,17 @@ public class RootBuilder {
                 for (Method method : o.getMethods()) {
                     methodCount++;
                 }
-
-                String translatedClassName = o.getType().replaceAll("\\/", "\\.").substring(1, o.getType().length() - 1);
-                ClassInfo classInfo = new ClassInfo(translatedClassName, methodCount);
-                rootNode.add(classInfo);
+                if (filterGms) {
+                    if (o.getType().contains("gms") || o.getType().contains("firebase")) {
+                        String translatedClassName = o.getType().replaceAll("\\/", "\\.").substring(1, o.getType().length() - 1);
+                        ClassInfo classInfo = new ClassInfo(translatedClassName, methodCount);
+                        rootNode.add(classInfo);
+                    }
+                } else {
+                    String translatedClassName = o.getType().replaceAll("\\/", "\\.").substring(1, o.getType().length() - 1);
+                    ClassInfo classInfo = new ClassInfo(translatedClassName, methodCount);
+                    rootNode.add(classInfo);
+                }
             }
 
         } catch (Exception ex) {
@@ -188,5 +199,9 @@ public class RootBuilder {
             ex.printStackTrace(System.err);
         }
         return rootNode;
+    }
+
+    public void setFilterGms(boolean filterGms) {
+        this.filterGms = filterGms;
     }
 }

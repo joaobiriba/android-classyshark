@@ -20,6 +20,7 @@ import com.google.classyshark.gui.GuiMode;
 import com.google.classyshark.gui.panel.chart.RingChartPanel;
 import com.google.classyshark.gui.panel.displayarea.DisplayArea;
 import com.google.classyshark.gui.panel.displayarea.IDisplayArea;
+import com.google.classyshark.gui.panel.gmsdetect.GmsDetectPanel;
 import com.google.classyshark.gui.panel.io.CurrentFolderConfig;
 import com.google.classyshark.gui.panel.io.FileChooserUtils;
 import com.google.classyshark.gui.panel.io.RecentArchivesConfig;
@@ -67,6 +68,7 @@ public class ClassySharkPanel extends JPanel
     private Toolbar toolbar;
     private JSplitPane jSplitPane;
     private MethodsCountPanel methodsCountPanel;
+    private GmsDetectPanel gmsDetectPanel;
     private int dividerLocation = 0;
     private IDisplayArea displayArea;
     private FilesTree filesTree;
@@ -244,6 +246,7 @@ public class ClassySharkPanel extends JPanel
         toolbar.activateNavigationButtons();
         filesTree.setVisibleRoot();
         methodsCountPanel.loadFile(silverGhost.getBinaryArchive());
+        gmsDetectPanel.loadFile(silverGhost.getBinaryArchive());
     }
 
     @Override
@@ -319,6 +322,10 @@ public class ClassySharkPanel extends JPanel
         jTabbedPane.addTab("Classes", leftScrollPane);
         methodsCountPanel = new MethodsCountPanel(this);
         jTabbedPane.addTab("Methods count", methodsCountPanel);
+
+        gmsDetectPanel = new GmsDetectPanel(this);
+        jTabbedPane.addTab("GMS Detect", gmsDetectPanel);
+
         theme.applyTo(jTabbedPane);
 
         jTabbedPane.addChangeListener(new ChangeListener() {
